@@ -3,10 +3,10 @@
 import { login } from '@/actions/auth';
 import { redirect } from 'next/navigation';
 
-export default function FormLogin() {
+export default function FormLogin({ redirectTo }: { redirectTo: string }) {
 	const handlerLogin = async () => {
 		await login();
-		redirect('/admin');
+		redirect(redirectTo);
 	};
 
 	return (

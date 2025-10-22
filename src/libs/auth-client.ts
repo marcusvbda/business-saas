@@ -1,7 +1,5 @@
 import { createAuthClient } from 'better-auth/react';
-import { ReactNode } from 'react';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 import { PrismaClient } from '@prisma/client';
 import { APIError, betterAuth } from 'better-auth';
@@ -33,24 +31,17 @@ export async function getSession() {
 	return session;
 }
 
-export const authMiddleware = async (
-	children: ReactNode,
-): Promise<ReactNode> => {
-	const session = await getSession();
-
-	if (!session) {
-		return redirect(`/auth/signin`);
-	}
-
-	return children;
-};
-
-export async function signInEmail(email: string, password: string) {
+export async function signInEmail(
+	email: string,
+	password: string,
+	rememberMe: boolean,
+) {
 	try {
 		await auth.api.signInEmail({
 			body: {
 				email,
 				password,
+				rememberMe,
 			},
 		});
 	} catch (error) {
