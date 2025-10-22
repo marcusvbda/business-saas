@@ -37,9 +37,6 @@
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
     "unused-imports/no-unused-imports": "error",
-    "prettier/prettier": [
-      "error"
-    ],
     "react/react-in-jsx-scope": "off",
     "import/no-anonymous-default-export": "off",
     "react/prop-types": "off",
