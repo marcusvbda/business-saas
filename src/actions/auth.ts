@@ -1,10 +1,10 @@
 'use server';
-import { signInEmail, signOut } from '@/libs/auth-client';
+import { signInEmail, signOut } from '@/lib/auth-client';
 
-export const login = async () => {
-	await signInEmail('admin@admin.com', 'adminadmin', true);
+export const login = async (email:string,password:string) => {
+	return await signInEmail(email,password, true);
 };
 
 export const logout = async () => {
-	await signOut();
+	return await signOut();
 };

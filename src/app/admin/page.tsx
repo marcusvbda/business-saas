@@ -1,6 +1,7 @@
 'use client';
 
 import { logout } from '@/actions/auth';
+import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -21,7 +22,7 @@ export default function Page() {
 			<Link href="/" className="text-blue-500 underline">
 				Go to Home Page
 			</Link>
-			<button onClick={logoutHandler}>Logout</button>
+			<Button onClick={logoutHandler}>Logout</Button>
 			{isFetching ? (
 				'Laoding'
 			) : (
