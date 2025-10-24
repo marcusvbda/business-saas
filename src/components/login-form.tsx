@@ -1,20 +1,19 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import z from 'zod';
 import Image from 'next/image';
-import { Spinner } from './ui/spinner';
 import { signInEmail } from '@/actions/auth';
 import OnlyClient from './only-client';
 import Link from 'next/link';
+import TransactionBtn from './transaction-btn';
 import SocialLoginBtns from './social-login-btns';
+import { toast } from 'react-toastify';
 
 interface IForm {
 	email: string;
@@ -116,14 +115,14 @@ export function LoginForm({ className, redirectTo, ...props }: any) {
 										</label>
 									</div>
 								</div>
-								<Button
+								<TransactionBtn
 									type="submit"
 									className="w-full"
-									disabled={isLoading || isSubmitting}
+									showSpinner={true}
+									loading={isLoading || isSubmitting}
 								>
-									{(isLoading || isSubmitting) && <Spinner />}
 									Login
-								</Button>
+								</TransactionBtn>
 								<SocialLoginBtns />
 								<div className="text-center text-sm">
 									Don&apos;t have an account?{' '}

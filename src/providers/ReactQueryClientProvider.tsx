@@ -3,7 +3,6 @@
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Toaster } from 'sonner';
 
 export interface IInitialState {
 	session: any;
@@ -33,7 +32,6 @@ export default function ReactQueryClientProvider({ children }: IProps) {
 				initialIsOpen={process.env.NODE_ENV === 'development'}
 			/>
 			{children}
-			<Toaster />
 		</QueryClientProvider>
 	);
 }

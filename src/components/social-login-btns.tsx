@@ -1,8 +1,8 @@
 'use client';
 import { ReactNode } from 'react';
-import { Button } from './ui/button';
 import { signInSocial } from '@/actions/auth';
 import { redirect } from 'next/navigation';
+import TransactionBtn from './transaction-btn';
 
 export default function SocialLoginBtns(): ReactNode {
 	const loginSocial = async (provider: string) => {
@@ -20,10 +20,10 @@ export default function SocialLoginBtns(): ReactNode {
 				</span>
 			</div>
 			<div className="grid grid-cols-2 gap-4">
-				<Button
+				<TransactionBtn
 					variant="outline"
 					type="button"
-					className="w-full"
+					className="w-formAction"
 					onClick={() => loginSocial('github')}
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -33,8 +33,8 @@ export default function SocialLoginBtns(): ReactNode {
 						/>
 					</svg>
 					Login with GitHub
-				</Button>
-				<Button
+				</TransactionBtn>
+				<TransactionBtn
 					type="button"
 					variant="outline"
 					className="w-full"
@@ -47,7 +47,7 @@ export default function SocialLoginBtns(): ReactNode {
 						/>
 					</svg>
 					Login with Google
-				</Button>
+				</TransactionBtn>
 			</div>
 		</>
 	);

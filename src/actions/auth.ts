@@ -17,7 +17,7 @@ export const signInEmail = async (
 	rememberMe: boolean
 ) => {
 	try {
-		return await auth.api.signInEmail({
+		await auth.api.signInEmail({
 			body: {
 				email,
 				password,
@@ -36,7 +36,7 @@ export const signInEmail = async (
 
 export const signUpEmail = async (email: string, password: string) => {
 	try {
-		return await auth.api.signUpEmail({
+		await auth.api.signUpEmail({
 			body: {
 				email,
 				password,

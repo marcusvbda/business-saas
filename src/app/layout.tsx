@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import ReactQueryClientProvider from '../providers/ReactQueryClientProvider';
+import { ToastContainer } from 'react-toastify';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -24,7 +25,10 @@ export default function RootLayout({ children }) {
 				suppressHydrationWarning
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+				<main>
+					<ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+				</main>
+				<ToastContainer />
 			</body>
 		</html>
 	);
