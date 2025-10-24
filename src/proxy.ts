@@ -1,16 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSession } from './lib/auth-client';
+import { getSession } from './actions/auth';
 
-export const publicRoutes = ['/auth','/_next',"/favicon.ico","/assets"];
+export const publicRoutes = [
+	'/auth',
+	'/_next',
+	'/favicon.ico',
+	'/assets',
+	'/api/auth/callback',
+];
 
 export async function proxy(request: NextRequest) {
 	const url = request.nextUrl.clone();
 
 	const pathName = url.pathname;
-	const isPublicAuth = publicRoutes.some((x:string)=> pathName.startsWith(x));
+	const isPublicAuth = publicRoutes.some((x: string) => pathName.startsWith(x));
 
 	const res = NextResponse.next();
-	if(!isPublicAuth) {
+	if (!isPublicAuth) {
 		const session = await getSession();
 		if (!session) {
 			const redirectBack = encodeURIComponent(url.pathname);
@@ -22,6 +28,6 @@ export async function proxy(request: NextRequest) {
 		const sessionStr = JSON.stringify(session);
 		res.headers.set('x-user-session', sessionStr);
 	}
-	
+
 	return res;
 }

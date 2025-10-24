@@ -1,6 +1,7 @@
 'use client';
 
-import { logout } from '@/actions/auth';
+import { signOut } from '@/actions/auth';
+import { getUsers } from '@/actions/users';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -9,11 +10,11 @@ import { redirect } from 'next/navigation';
 export default function Page() {
 	const { data, isFetching } = useQuery({
 		queryKey: ['users'],
-		queryFn: () => fetch('/api/users').then((res: any) => res.json()),
+		queryFn: () => getUsers(),
 	});
 
 	const logoutHandler = async () => {
-		await logout();
+		await signOut();
 		redirect('/auth/signin');
 	};
 
