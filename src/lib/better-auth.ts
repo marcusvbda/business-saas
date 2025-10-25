@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
+import { createAuthClient } from 'better-auth/react';
+import { sendEmail } from './resend';
 
 export const auth = betterAuth({
 	database: prismaAdapter(new PrismaClient(), {
@@ -12,7 +14,28 @@ export const auth = betterAuth({
 		autoSignIn: true,
 		minPasswordLength: 6,
 		maxPasswordLength: 20,
-		// requireEmailVerification: true,
+		requireEmailVerification: true,
+		// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+		sendResetPassword: async ({ user, url }, request) => {
+			await sendEmail(process.env.RESEND_API_KEY, {
+				from: 'Acme <onboarding@resend.dev>',
+				to: user.email,
+				subject: 'Email Verification',
+				html: `Click the link to verify your email: ${url}`,
+			});
+		},
+	},
+	emailVerification: {
+		sendOnSignUp: true, // Automatically sends a verification email at signup
+		autoSignInAfterVerification: true, // Automatically signIn the user after verification
+		sendVerificationEmail: async ({ user, url }) => {
+			await sendEmail(process.env.RESEND_API_KEY, {
+				from: 'Acme <onboarding@resend.dev>', //
+				to: user.email,
+				subject: 'Email Verification',
+				html: `Click the link to verify your email: ${url}`,
+			});
+		},
 	},
 	socialProviders: {
 		github: {
@@ -25,4 +48,8 @@ export const auth = betterAuth({
 		},
 	},
 	plugins: [nextCookies()],
+});
+
+export const authClient = createAuthClient({
+	baseURL: process.env.BETTER_AUTH_URL,
 });

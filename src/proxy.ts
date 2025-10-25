@@ -6,7 +6,7 @@ export const publicRoutes = [
 	'/_next',
 	'/favicon.ico',
 	'/assets',
-	'/api/auth/callback',
+	'/api/auth',
 ];
 
 export async function proxy(request: NextRequest) {
@@ -19,9 +19,9 @@ export async function proxy(request: NextRequest) {
 	if (!isPublicAuth) {
 		const session = await getSession();
 		if (!session) {
-			const redirectBack = encodeURIComponent(url.pathname);
-			url.pathname = `/auth/signin`;
-			url.searchParams.set('redirect', redirectBack);
+			const redirectBack = url.pathname;
+			url.pathname = `/auth/sign-in`;
+			url.searchParams.set('redirectTo', redirectBack);
 
 			return NextResponse.redirect(url);
 		}

@@ -15,7 +15,7 @@ export default function Page() {
 
 	const logoutHandler = async () => {
 		await signOut();
-		redirect('/auth/signin');
+		redirect('/auth/sign-in');
 	};
 
 	return (
