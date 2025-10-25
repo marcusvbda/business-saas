@@ -2,7 +2,6 @@
 
 import { authClient } from '@/lib/better-auth';
 import { AuthUIProvider } from '@daveyplate/better-auth-ui';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -17,7 +16,20 @@ export function BetterAuthProvider({ children }: { children: ReactNode }) {
 			onSessionChange={() => {
 				router.refresh();
 			}}
-			Link={Link}
+			organization={true}
+			apiKey={true}
+			additionalFields={{
+				company: {
+					label: 'Company',
+					placeholder: 'Your company name',
+					description: 'Enter your company name',
+					required: true,
+					type: 'string',
+				},
+			}}
+			signUp={{
+				fields: ['company'],
+			}}
 		>
 			{children}
 		</AuthUIProvider>

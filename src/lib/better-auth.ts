@@ -4,6 +4,8 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { createAuthClient } from 'better-auth/react';
 import { sendEmail } from './resend';
+import { organization } from 'better-auth/plugins';
+import { organizationClient } from 'better-auth/client/plugins';
 
 export const auth = betterAuth({
 	database: prismaAdapter(new PrismaClient(), {
@@ -47,9 +49,10 @@ export const auth = betterAuth({
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 		},
 	},
-	plugins: [nextCookies()],
+	plugins: [nextCookies(), organization()],
 });
 
 export const authClient = createAuthClient({
 	baseURL: process.env.BETTER_AUTH_URL,
+	plugins: [organizationClient()],
 });
