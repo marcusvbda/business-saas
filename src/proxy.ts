@@ -17,6 +17,7 @@ export async function proxy(request: NextRequest) {
 	const isPublicAuth = publicRoutes.some((x: string) => pathName.startsWith(x));
 
 	const res = NextResponse.next();
+
 	if (!isPublicAuth) {
 		const session = await getSession();
 		if (!session) {
@@ -26,8 +27,8 @@ export async function proxy(request: NextRequest) {
 
 			return NextResponse.redirect(url);
 		}
-		const sessionStr = JSON.stringify(session);
-		res.headers.set('x-user-session', sessionStr);
+		const sessionStr = JSON.stringify(session?.user);
+		res.headers.set('x-user-logged', sessionStr);
 	}
 
 	return res;

@@ -1,11 +1,11 @@
 'use client';
 
 import { authClient } from '@/lib/better-auth';
+import { IWithChild } from '@/types/common';
 import { AuthUIProvider } from '@daveyplate/better-auth-ui';
 import { useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
 
-export function BetterAuthProvider({ children }: { children: ReactNode }) {
+export function BetterAuthProvider({ children }: IWithChild) {
 	const router = useRouter();
 
 	return (

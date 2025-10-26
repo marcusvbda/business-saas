@@ -1,31 +1,35 @@
 'use client';
 
-import { signOut } from '@/actions/auth';
 import { getUsers } from '@/actions/users';
 import AdminTemplate from '@/components/admin-template';
 import { Button } from '@/components/ui/button';
+import { useGlobalStore } from '@/stores/global';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 
 export default function Page() {
+	const { setLoading } = useGlobalStore();
 	const { data, isFetching } = useQuery({
 		queryKey: ['users'],
 		queryFn: () => getUsers(),
 	});
 
-	const logoutHandler = async () => {
-		await signOut();
-		redirect('/auth/sign-in');
+	const loadingHandler = async () => {
+		setLoading(true);
+		setTimeout(() => {
+			setLoading(false);
+		}, 2000);
 	};
 
 	return (
-		<AdminTemplate>
+		<AdminTemplate
+			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Users' }]}
+		>
 			<div className="flex flex-col gap-1">
 				<Link href="/" className="text-blue-500 underline">
 					Go to Home Page
 				</Link>
-				<Button onClick={logoutHandler}>Logout</Button>
+				<Button onClick={loadingHandler}>Test loading</Button>
 				{isFetching ? (
 					'Laoding'
 				) : (

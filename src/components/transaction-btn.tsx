@@ -1,8 +1,9 @@
-import { ReactNode, useTransition } from 'react';
+import { useTransition } from 'react';
 import { Button } from './ui/button';
 import { Spinner } from './ui/spinner';
+import { IWithChild } from '@/types/common';
 
-interface IProps {
+interface IProps extends IWithChild {
 	variant?:
 		| 'link'
 		| 'default'
@@ -16,7 +17,6 @@ interface IProps {
 	showSpinner?: boolean;
 	loading?: boolean;
 	onClick?: any;
-	children?: ReactNode;
 }
 
 export default function TransactionBtn({

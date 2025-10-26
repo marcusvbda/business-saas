@@ -3,7 +3,6 @@ import { AppSidebar } from '@/components/app-sidebar';
 import {
 	Breadcrumb,
 	BreadcrumbItem,
-	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
@@ -14,14 +13,17 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { ReactNode } from 'react';
 import { ThemeSwitcher } from './theme-switcher';
+import { IBreadcrumbItem, IWithChild } from '@/types/common';
+import LoadingProvider from '@/providers/loading';
+import { Fragment } from 'react/jsx-runtime';
+import Link from 'next/link';
 
-interface IProps {
-	children: ReactNode;
+interface IProps extends IWithChild {
+	breadcrumb?: IBreadcrumbItem[];
 }
 
-export default function AdminTemplate({ children }: IProps) {
+export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
 	return (
 		<SidebarProvider>
 			<AppSidebar />
@@ -37,13 +39,24 @@ export default function AdminTemplate({ children }: IProps) {
 						</div>
 						<Breadcrumb>
 							<BreadcrumbList>
-								<BreadcrumbItem className="hidden md:block">
-									<BreadcrumbLink href="/">Home</BreadcrumbLink>
-								</BreadcrumbItem>
-								<BreadcrumbSeparator className="hidden md:block" />
-								<BreadcrumbItem>
-									<BreadcrumbPage>Data Fetching</BreadcrumbPage>
-								</BreadcrumbItem>
+								{breadcrumb.map((x: IBreadcrumbItem, index: any) => (
+									<Fragment key={index}>
+										<BreadcrumbItem className="hidden md:block">
+											{x?.href ? (
+												<Link href={x.href}>
+													<BreadcrumbPage className="opacity-50">
+														{x.label}
+													</BreadcrumbPage>
+												</Link>
+											) : (
+												<BreadcrumbPage>{x.label}</BreadcrumbPage>
+											)}
+										</BreadcrumbItem>
+										{index !== breadcrumb.length - 1 && (
+											<BreadcrumbSeparator className="hidden md:block" />
+										)}
+									</Fragment>
+								))}
 							</BreadcrumbList>
 						</Breadcrumb>
 						<div className="ml-auto">
@@ -51,7 +64,11 @@ export default function AdminTemplate({ children }: IProps) {
 						</div>
 					</div>
 				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+					<LoadingProvider spinerClassName="size-10" className="py-10">
+						{children}
+					</LoadingProvider>
+				</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);

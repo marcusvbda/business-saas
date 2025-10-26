@@ -1,16 +1,12 @@
 'use client';
 
-import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { IWithChild } from '@/types/common';
 
 export interface IInitialState {
 	session: any;
 	selectedWalletId: any;
-}
-
-interface IProps {
-	children: ReactNode;
 }
 
 const queryClient = new QueryClient({
@@ -25,7 +21,7 @@ const queryClient = new QueryClient({
 	},
 });
 
-export default function ReactQueryClientProvider({ children }: IProps) {
+export default function ReactQueryClientProvider({ children }: IWithChild) {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<ReactQueryDevtools
