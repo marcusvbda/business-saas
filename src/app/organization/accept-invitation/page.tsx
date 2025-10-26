@@ -1,5 +1,5 @@
 import { AcceptInvitationCard } from '@daveyplate/better-auth-ui';
 
-export function AcceptInvitationPage() {
+export default function AcceptInvitationPage() {
 	return <AcceptInvitationCard />;
 }
