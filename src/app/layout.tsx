@@ -1,8 +1,9 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import ReactQueryClientProvider from '../providers/ReactQueryClientProvider';
-import { BetterAuthProvider } from '@/providers/BetterAuthProvider';
 import { Toaster } from '@/components/ui/sonner';
+import ReactQueryClientProvider from '@/providers/react-query-client.provider';
+import { BetterAuthProvider } from '@/providers/better-auth.provider';
+import { ThemeProvider } from '@/providers/theme.provider';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -26,12 +27,19 @@ export default function RootLayout({ children }) {
 				suppressHydrationWarning
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<main>
-					<ReactQueryClientProvider>
-						<BetterAuthProvider>{children}</BetterAuthProvider>
-					</ReactQueryClientProvider>
-				</main>
-				<Toaster />
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<main>
+						<ReactQueryClientProvider>
+							<BetterAuthProvider>{children}</BetterAuthProvider>
+						</ReactQueryClientProvider>
+					</main>
+					<Toaster />
+				</ThemeProvider>
 			</body>
 		</html>
 	);

@@ -18,18 +18,6 @@ export function BetterAuthProvider({ children }: { children: ReactNode }) {
 			}}
 			organization={true}
 			apiKey={true}
-			additionalFields={{
-				company: {
-					label: 'Company',
-					placeholder: 'Your company name',
-					description: 'Enter your company name',
-					required: true,
-					type: 'string',
-				},
-			}}
-			signUp={{
-				fields: ['company'],
-			}}
 		>
 			{children}
 		</AuthUIProvider>

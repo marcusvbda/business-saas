@@ -7,6 +7,7 @@ export const publicRoutes = [
 	'/favicon.ico',
 	'/assets',
 	'/api/auth',
+	'/organization/accept-invitation',
 ];
 
 export async function proxy(request: NextRequest) {

@@ -4,8 +4,8 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { createAuthClient } from 'better-auth/react';
 import { sendEmail } from './resend';
-import { organization } from 'better-auth/plugins';
-import { organizationClient } from 'better-auth/client/plugins';
+import { apiKey, organization } from 'better-auth/plugins';
+import { apiKeyClient, organizationClient } from 'better-auth/client/plugins';
 
 export const auth = betterAuth({
 	database: prismaAdapter(new PrismaClient(), {
@@ -32,7 +32,7 @@ export const auth = betterAuth({
 		autoSignInAfterVerification: true, // Automatically signIn the user after verification
 		sendVerificationEmail: async ({ user, url }) => {
 			await sendEmail(process.env.RESEND_API_KEY, {
-				from: 'Acme <onboarding@resend.dev>', //
+				from: 'Acme <onboarding@resend.dev>',
 				to: user.email,
 				subject: 'Email Verification',
 				html: `Click the link to verify your email: ${url}`,
@@ -49,10 +49,24 @@ export const auth = betterAuth({
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 		},
 	},
-	plugins: [nextCookies(), organization()],
+	plugins: [
+		nextCookies(),
+		organization({
+			sendInvitationEmail: async ({ email, organization, invitation }) => {
+				const inviteLink = `${process.env.BETTER_AUTH_URL}/organization/accept-invitation?invitationId=${invitation.id}`;
+				await sendEmail(process.env.RESEND_API_KEY, {
+					from: 'Acme <onboarding@resend.dev>',
+					to: email,
+					subject: `Invitation to ${organization.name}`,
+					html: `Click the link to accept the invite: ${inviteLink}`,
+				});
+			},
+		}),
+		apiKey(),
+	],
 });
 
 export const authClient = createAuthClient({
 	baseURL: process.env.BETTER_AUTH_URL,
-	plugins: [organizationClient()],
+	plugins: [organizationClient(), apiKeyClient()],
 });

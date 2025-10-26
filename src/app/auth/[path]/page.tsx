@@ -1,10 +1,5 @@
-import { AuthView, authViewPaths } from '@daveyplate/better-auth-ui';
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-	return Object.values(authViewPaths).map((path) => ({ path }));
-}
+import OnlyClient from '@/components/only-client';
+import { AuthView } from '@daveyplate/better-auth-ui';
 
 export default async function AuthPage({
 	params,
@@ -15,7 +10,9 @@ export default async function AuthPage({
 
 	return (
 		<main className="w-full flex grow flex-col items-center justify-center self-center p-4 md:p-6">
-			<AuthView path={path} />
+			<OnlyClient>
+				<AuthView path={path} />
+			</OnlyClient>
 		</main>
 	);
 }

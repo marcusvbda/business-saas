@@ -1,10 +1,6 @@
-import { AccountView, accountViewPaths } from '@daveyplate/better-auth-ui';
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-	return Object.values(accountViewPaths).map((path) => ({ path }));
-}
+import AdminTemplate from '@/components/admin-template';
+import OnlyClient from '@/components/only-client';
+import { AccountView } from '@daveyplate/better-auth-ui';
 
 export default async function AccountPage({
 	params,
@@ -14,8 +10,12 @@ export default async function AccountPage({
 	const { path } = await params;
 
 	return (
-		<main className="container p-4 md:p-6">
-			<AccountView path={path} />
-		</main>
+		<AdminTemplate>
+			<main className="container p-4 md:p-6">
+				<OnlyClient>
+					<AccountView path={path} />
+				</OnlyClient>
+			</main>
+		</AdminTemplate>
 	);
 }

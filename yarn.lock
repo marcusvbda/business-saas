@@ -30,19 +30,27 @@
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.4.tgz#a70226016fabe25c5783b2f22d3e1c9bc5ca3326"
   integrity sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==
 
-"@better-auth/core@1.3.31":
-  version "1.3.31"
-  resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.3.31.tgz#ae5bfb5ad11bb854e365d789e4b4a0ec9e12f14a"
-  integrity sha512-6G/zRTQ0RA3coUtjQztlWjOl021LjXEZVNxT9S5w60Uqc5n38atFCURiuebJwgGVuzUuWA6kRKRzW6LJNO8MLA==
+"@better-auth/core@1.3.32":
+  version "1.3.32"
+  resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.3.32.tgz#571ec80062b3538637109ee02e44cd7efa23118a"
+  integrity sha512-G4y6qB0yDp0XU0VYsUC/8kF1l6xxQyxBUGYy5Ww9uK5EGXSufU6O0IH0u2GjSh8ZAtOVs5JEfOMen1tuZPObtw==
   dependencies:
     zod "^4.1.5"
 
-"@better-auth/telemetry@1.3.31":
-  version "1.3.31"
-  resolved "https://registry.yarnpkg.com/@better-auth/telemetry/-/telemetry-1.3.31.tgz#380947ec6a51bfb397a20e2c0fd33efb18fce446"
-  integrity sha512-dhvL7FuyfPlYV/gFhuzW0wkvV98VLapwgM5TEGS0T7EBC70mAqD9OpcwUDL6karcVIuEf6i+6K0Gw1TJguhoEw==
+"@better-auth/stripe@^1.3.32":
+  version "1.3.32"
+  resolved "https://registry.yarnpkg.com/@better-auth/stripe/-/stripe-1.3.32.tgz#f47fb9713b7d6e5ca24a2bbdd0bca792c69bd813"
+  integrity sha512-ThTT/Xqts+4RUFn+W9hTg/wkeqsxwp7FDmTmGcE0anD/uZoCNL4FtIvmj8Gx35b5Mbn08EjDBVXDQF3gfQnXyw==
   dependencies:
-    "@better-auth/core" "1.3.31"
+    defu "^6.1.4"
+    zod "^4.1.5"
+
+"@better-auth/telemetry@1.3.32":
+  version "1.3.32"
+  resolved "https://registry.yarnpkg.com/@better-auth/telemetry/-/telemetry-1.3.32.tgz#bd24fa15182b055bfb6559c504e1afa743651887"
+  integrity sha512-nYiMkP94l1xQ4j1CN0jrh03fcKemeFRDNWnCknf+GwTsykp3uApNDV1wdpjoEk1x68+AsAinb6GEj2Ak9qWOLA==
+  dependencies:
+    "@better-auth/core" "1.3.32"
     "@better-auth/utils" "0.3.0"
     "@better-fetch/fetch" "1.1.18"
 
@@ -1617,7 +1625,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^24.9.1":
+"@types/node@*", "@types/node@>=8.1.0", "@types/node@^24.9.1":
   version "24.9.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-24.9.1.tgz#b7360b3c789089e57e192695a855aa4f6981a53c"
   integrity sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==
@@ -2184,12 +2192,12 @@ bcryptjs@^3.0.2:
   integrity sha512-k38b3XOZKv60C4E2hVsXTolJWfkGRMbILBIe2IBITXciy5bOsTKot5kDrf3ZfufQtQOUN5mXceUEpU1rTl9Uog==
 
 better-auth@^1.3.28:
-  version "1.3.31"
-  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.3.31.tgz#3656ac8d918ce38b66ecdefead17311293255ff6"
-  integrity sha512-wq/RRl2aapbHlzvfmWGMkt+Qeav80dATbEU9hAPalLoZqbR3L7ABb/RvtFD8NshWRcXzwLkwAUoVmT3851+wKA==
+  version "1.3.32"
+  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.3.32.tgz#73251074297d444299f697dbbea782c7454a7a0b"
+  integrity sha512-BHz/Ci0oiLe7PA922i+WqqoyW/fj5F1iax7DlUKmixFtyVQ2BJUDXcOROONARCtYScCDDoPLcW3ZrPXPbq/1Bg==
   dependencies:
-    "@better-auth/core" "1.3.31"
-    "@better-auth/telemetry" "1.3.31"
+    "@better-auth/core" "1.3.32"
+    "@better-auth/telemetry" "1.3.32"
     "@better-auth/utils" "0.3.0"
     "@better-fetch/fetch" "1.1.18"
     "@noble/ciphers" "^2.0.0"
@@ -4544,6 +4552,13 @@ qr.js@0.0.0:
   resolved "https://registry.yarnpkg.com/qr.js/-/qr.js-0.0.0.tgz#cace86386f59a0db8050fa90d9b6b0e88a1e364f"
   integrity sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==
 
+qs@^6.11.0:
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.0.tgz#c63fa40680d2c5c941412a0e899c89af60c0a930"
+  integrity sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==
+  dependencies:
+    side-channel "^1.1.0"
+
 querystringify@^2.1.1:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
@@ -5096,6 +5111,14 @@ strip-json-comments@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
+
+stripe@16.12.0:
+  version "16.12.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-16.12.0.tgz#75e3d8f0f35bea14885cb3605a41d6afc182aa66"
+  integrity sha512-H7eFVLDxeTNNSn4JTRfL2//LzCbDrMSZ+2q1c7CanVWgK2qIW5TwS+0V7N9KcKZZNpYh/uCqK0PyZh/2UsaAtQ==
+  dependencies:
+    "@types/node" ">=8.1.0"
+    qs "^6.11.0"
 
 strtok3@^10.2.2:
   version "10.3.4"

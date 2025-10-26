@@ -15,6 +15,7 @@ import {
 	SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { ReactNode } from 'react';
+import { ThemeSwitcher } from './theme-switcher';
 
 interface IProps {
 	children: ReactNode;
@@ -25,19 +26,19 @@ export default function AdminTemplate({ children }: IProps) {
 		<SidebarProvider>
 			<AppSidebar />
 			<SidebarInset>
-				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-					<div className="flex items-center gap-2 px-4">
-						<SidebarTrigger className="-ml-1" />
-						<Separator
-							orientation="vertical"
-							className="mr-2 data-[orientation=vertical]:h-4"
-						/>
+				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full">
+					<div className="flex items-center gap-2 px-4 w-full">
+						<div className="md:hidden lg:hidden xl:hidden flex items-center gap-2">
+							<SidebarTrigger className="-ml-1 block" />
+							<Separator
+								orientation="vertical"
+								className="mr-2 data-[orientation=vertical]:h-4"
+							/>
+						</div>
 						<Breadcrumb>
 							<BreadcrumbList>
 								<BreadcrumbItem className="hidden md:block">
-									<BreadcrumbLink href="#">
-										Building Your Application
-									</BreadcrumbLink>
+									<BreadcrumbLink href="/">Home</BreadcrumbLink>
 								</BreadcrumbItem>
 								<BreadcrumbSeparator className="hidden md:block" />
 								<BreadcrumbItem>
@@ -45,6 +46,9 @@ export default function AdminTemplate({ children }: IProps) {
 								</BreadcrumbItem>
 							</BreadcrumbList>
 						</Breadcrumb>
+						<div className="ml-auto">
+							<ThemeSwitcher />
+						</div>
 					</div>
 				</header>
 				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
