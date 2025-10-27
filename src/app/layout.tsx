@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import ReactQueryClientProvider from '@/providers/react-query-client';
-import { BetterAuthProvider } from '@/providers/better-auth';
+import { BetterAuthProvider } from '@/providers/better-auth-ui';
 import { ThemeProvider } from '@/providers/theme';
 import { IWithChild } from '@/types/common';
 

@@ -52,6 +52,17 @@ export const auth = betterAuth({
 	plugins: [
 		nextCookies(),
 		organization({
+			additionalFields: {
+				publicId: {
+					type: 'string',
+					fieldName: 'public_id',
+					required: false,
+					input: false,
+					unique: true,
+					returned: true,
+				},
+			},
+
 			sendInvitationEmail: async ({ email, organization, invitation }) => {
 				const inviteLink = `${process.env.BETTER_AUTH_URL}/organization/accept-invitation?invitationId=${invitation.id}`;
 				await sendEmail(process.env.RESEND_API_KEY, {

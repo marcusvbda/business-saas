@@ -17,7 +17,7 @@ export function BetterAuthProvider({ children }: IWithChild) {
 				router.refresh();
 			}}
 			organization={true}
-			apiKey={true}
+			apiKey={false}
 		>
 			{children}
 		</AuthUIProvider>
