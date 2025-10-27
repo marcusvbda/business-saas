@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
 interface IGlobalStore {
-	loading: boolean;
-	setLoading: (value: boolean) => void;
+	globalLoading: boolean;
+	setGlobalLoading: (value: boolean) => void;
 }
 
 export const useGlobalStore = create<IGlobalStore>((set) => ({
-	loading: false,
-	setLoading: (value: boolean) => set({ loading: value }),
+	globalLoading: false,
+	setGlobalLoading: (value: boolean) => set({ globalLoading: value }),
 }));

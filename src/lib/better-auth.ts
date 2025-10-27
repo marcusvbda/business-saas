@@ -3,9 +3,14 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { createAuthClient } from 'better-auth/react';
-import { sendEmail } from './resend';
 import { apiKey, organization } from 'better-auth/plugins';
 import { apiKeyClient, organizationClient } from 'better-auth/client/plugins';
+import {
+	createSession,
+	sendInvitationEmail,
+	sendResetPassword,
+	sendVerificationEmail,
+} from '@/server/auth';
 
 export const auth = betterAuth({
 	database: prismaAdapter(new PrismaClient(), {
@@ -17,27 +22,12 @@ export const auth = betterAuth({
 		minPasswordLength: 6,
 		maxPasswordLength: 20,
 		requireEmailVerification: true,
-		// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-		sendResetPassword: async ({ user, url }, request) => {
-			await sendEmail(process.env.RESEND_API_KEY, {
-				from: 'Acme <onboarding@resend.dev>',
-				to: user.email,
-				subject: 'Email Verification',
-				html: `Click the link to verify your email: ${url}`,
-			});
-		},
+		sendResetPassword,
 	},
 	emailVerification: {
-		sendOnSignUp: true, // Automatically sends a verification email at signup
-		autoSignInAfterVerification: true, // Automatically signIn the user after verification
-		sendVerificationEmail: async ({ user, url }) => {
-			await sendEmail(process.env.RESEND_API_KEY, {
-				from: 'Acme <onboarding@resend.dev>',
-				to: user.email,
-				subject: 'Email Verification',
-				html: `Click the link to verify your email: ${url}`,
-			});
-		},
+		sendOnSignUp: true,
+		autoSignInAfterVerification: true,
+		sendVerificationEmail,
 	},
 	socialProviders: {
 		github: {
@@ -49,29 +39,18 @@ export const auth = betterAuth({
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 		},
 	},
+	databaseHooks: {
+		session: {
+			create: {
+				before: createSession,
+			},
+		},
+	},
 	plugins: [
 		nextCookies(),
 		organization({
-			additionalFields: {
-				publicId: {
-					type: 'string',
-					fieldName: 'public_id',
-					required: false,
-					input: false,
-					unique: true,
-					returned: true,
-				},
-			},
-
-			sendInvitationEmail: async ({ email, organization, invitation }) => {
-				const inviteLink = `${process.env.BETTER_AUTH_URL}/organization/accept-invitation?invitationId=${invitation.id}`;
-				await sendEmail(process.env.RESEND_API_KEY, {
-					from: 'Acme <onboarding@resend.dev>',
-					to: email,
-					subject: `Invitation to ${organization.name}`,
-					html: `Click the link to accept the invite: ${inviteLink}`,
-				});
-			},
+			autoCreateOrganizationOnSignUp: true,
+			sendInvitationEmail,
 		}),
 		apiKey(),
 	],

@@ -15,16 +15,19 @@ import {
 } from '@/components/ui/sidebar';
 import { ThemeSwitcher } from './theme-switcher';
 import { IBreadcrumbItem, IWithChild } from '@/types/common';
-import LoadingProvider from '@/providers/loading';
 import { Fragment } from 'react/jsx-runtime';
 import Link from 'next/link';
 import ProtectedPage from './protected-page';
+import { useGlobalStore } from '@/stores/global';
+import Loading from './fallback';
 
 interface IProps extends IWithChild {
 	breadcrumb?: IBreadcrumbItem[];
 }
 
 export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
+	const { globalLoading } = useGlobalStore();
+
 	return (
 		<ProtectedPage>
 			<SidebarProvider>
@@ -67,9 +70,7 @@ export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
 						</div>
 					</header>
 					<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-						<LoadingProvider spinerClassName="size-10" className="py-10">
-							{children}
-						</LoadingProvider>
+						{globalLoading ? <Loading /> : children}
 					</div>
 				</SidebarInset>
 			</SidebarProvider>
