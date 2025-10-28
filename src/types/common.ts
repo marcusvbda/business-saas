@@ -12,3 +12,8 @@ export type IBreadcrumbItem = {
 	href?: string;
 	label: string;
 };
+
+export interface IModalComp {
+	visible: boolean;
+	setVisible: any;
+}

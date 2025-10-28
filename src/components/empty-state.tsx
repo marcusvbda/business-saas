@@ -7,6 +7,7 @@ import {
 import { ReactNode } from '@tabler/icons-react';
 
 interface IProps {
+	className?: string;
 	label: string | ReactNode;
 	description?: string | ReactNode;
 	icon?: string | ReactNode;
@@ -18,9 +19,10 @@ export default function EmptyState({
 	description,
 	icon,
 	content,
+	className = '',
 }: IProps) {
 	return (
-		<Empty>
+		<Empty className={className}>
 			<EmptyHeader>
 				{icon && icon}
 				<EmptyTitle>{label}</EmptyTitle>

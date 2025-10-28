@@ -11,7 +11,7 @@ interface IProps extends IWithChild {
 		| 'outline'
 		| 'secondary'
 		| 'ghost';
-	type: 'button' | 'submit';
+	type?: 'button' | 'submit';
 	className?: string;
 	disabled?: boolean;
 	showSpinner?: boolean;

@@ -17,9 +17,9 @@ import { ThemeSwitcher } from './theme-switcher';
 import { IBreadcrumbItem, IWithChild } from '@/types/common';
 import { Fragment } from 'react/jsx-runtime';
 import Link from 'next/link';
-import ProtectedPage from './protected-page';
 import { useGlobalStore } from '@/stores/global';
 import Loading from './fallback';
+import ProtectedPage from './protected-page';
 
 interface IProps extends IWithChild {
 	breadcrumb?: IBreadcrumbItem[];
