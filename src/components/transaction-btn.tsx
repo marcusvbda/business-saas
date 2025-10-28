@@ -17,6 +17,8 @@ interface IProps extends IWithChild {
 	showSpinner?: boolean;
 	loading?: boolean;
 	onClick?: any;
+	loadingContent?: any;
+	form?: string;
 }
 
 export default function TransactionBtn({
@@ -28,6 +30,8 @@ export default function TransactionBtn({
 	onClick = null,
 	showSpinner = false,
 	children = null,
+	loadingContent = null,
+	form = null,
 }: IProps) {
 	const [pending, startTransition] = useTransition();
 
@@ -38,9 +42,10 @@ export default function TransactionBtn({
 			className={className}
 			disabled={pending || disabled || loading}
 			onClick={() => onClick && startTransition(() => onClick())}
+			form={form}
 		>
 			{(pending || loading) && showSpinner && <Spinner />}
-			{children}
+			{pending && loadingContent ? loadingContent : children}
 		</Button>
 	);
 }
