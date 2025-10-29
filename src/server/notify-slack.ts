@@ -15,9 +15,9 @@ type NotifyPayload = {
 };
 
 export async function notifySlack(payload: NotifyPayload) {
-	const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+	const webhookUrl = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
 	if (!webhookUrl) {
-		throw new Error('SLACK_WEBHOOK_URL is not configured');
+		throw new Error('NEXT_PUBLIC_SLACK_WEBHOOK_URL is not configured');
 	}
 
 	const hdrs = await headers();
