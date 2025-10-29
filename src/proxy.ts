@@ -8,6 +8,7 @@ export const publicRoutes = [
 	'/assets',
 	'/api/auth',
 	'/organization/accept-invitation',
+	'/stripe/webhook',
 ];
 
 export async function proxy(request: NextRequest) {

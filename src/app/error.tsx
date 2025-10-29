@@ -42,7 +42,9 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 			}
 		};
 
-		notify();
+		if (process.env.NODE_ENV !== 'development') {
+			notify();
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
