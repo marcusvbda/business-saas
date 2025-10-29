@@ -42,7 +42,7 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 			}
 		};
 
-		if (process.env.NODE_ENV !== 'development') {
+		if (process.env.SLACK_WEBHOOK_URL) {
 			notify();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
