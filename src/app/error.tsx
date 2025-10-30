@@ -9,7 +9,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { notifySlack } from '@/server/notify-slack';
+import { captureClientException, initSentryClient } from '@/lib/sentry-client';
 
 type ErrorProps = {
 	error: Error & { digest?: string };
@@ -21,30 +21,18 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 	const searchParams = useSearchParams();
 
 	useEffect(() => {
-		const notify = async () => {
-			try {
-				const fullUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-				const payload = {
-					text: error?.message ?? 'Unknown error',
-					url: fullUrl,
-					digest: (error as any)?.digest ?? null,
-					stack:
-						(error?.stack || '').split('\n').slice(0, 8).join('\n') || null,
-					userAgent:
-						typeof navigator !== 'undefined' ? navigator.userAgent : null,
-					timestamp: new Date().toISOString(),
-					level: 'error',
-					context: 'Next.js Error Boundary',
-				};
-				await notifySlack(payload);
-			} catch (e: any) {
-				// ignore
-			}
+		initSentryClient();
+		const fullUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+		const extras = {
+			url: fullUrl,
+			digest: (error as any)?.digest ?? null,
+			stackTop: (error?.stack || '').split('\n').slice(0, 8).join('\n') || null,
+			userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+			timestamp: new Date().toISOString(),
+			level: 'error',
+			context: 'Next.js Error Boundary',
 		};
-
-		if (process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL) {
-			notify();
-		}
+		captureClientException(error, extras);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
