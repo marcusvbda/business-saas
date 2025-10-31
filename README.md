@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js](https://nextjs.org) SaaS application with authentication, organizations, and Stripe subscriptions powered by [Better Auth](https://www.better-auth.com).
 
 ## Getting Started
 
@@ -20,14 +20,58 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Features
+
+- ✅ Email/Password Authentication with Better Auth
+- ✅ Social Authentication (GitHub, Google)
+- ✅ Organization/Team Management
+- ✅ Stripe Subscriptions Integration
+- ✅ API Key Management
+- ✅ Subscription Plans (Starter, Professional, Enterprise)
+- ✅ Monthly & Annual Billing
+- ✅ Free Trials with Abuse Prevention
+- ✅ Subscription Management UI
+- ✅ Usage Limits & Billing Portal
+
+## Stripe Subscriptions
+
+The application includes a complete Stripe subscription system with:
+
+- **Basic Plan**: $10/month (7-day trial) - 3 projects, 5GB storage
+- **Premium Plan**: $29/month (14-day trial) - 20 projects, 50GB storage
+- **Free Plan**: 1 project, 1GB storage
+
+### Environment Variables Required
+
+```env
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PRODUCT_PRICE_ID_BASIC=price_...
+STRIPE_PRODUCT_PRICE_ID_PREMIUM=price_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Setup Steps
+
+1. Get your Stripe API keys from https://dashboard.stripe.com
+2. Create products and prices in Stripe Dashboard
+3. For local testing, use Stripe CLI:
+   ```bash
+   stripe listen --forward-to localhost:3002/api/auth/stripe/webhook
+   ```
+4. Add the webhook signing secret to `.env` as `STRIPE_WEBHOOK_SECRET`
+
+## Key Pages
+
+- `/account/subscription` - Manage subscriptions and billing
+- `/auth/*` - Authentication pages
+- `/organization/*` - Organization management
+
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Better Auth Documentation](https://www.better-auth.com)
+- [Better Auth Stripe Plugin](https://www.better-auth.com/docs/plugins/stripe)
+- [Stripe Documentation](https://stripe.com/docs)
 
 ## Deploy on Vercel
 

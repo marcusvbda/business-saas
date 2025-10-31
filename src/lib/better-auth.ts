@@ -7,6 +7,16 @@ import { apiKey, organization } from 'better-auth/plugins';
 import { apiKeyClient, organizationClient } from 'better-auth/client/plugins';
 import { sendEmail } from './resend';
 import { prisma } from 'prisma/prisma.service';
+import { stripe } from '@better-auth/stripe';
+import { stripeClient } from '@better-auth/stripe/client';
+import Stripe from 'stripe';
+
+// Initialize Stripe client only if secret key is available
+const stripeInstance = process.env.STRIPE_SECRET_KEY
+	? new Stripe(process.env.STRIPE_SECRET_KEY, {
+			apiVersion: '2025-10-29.clover',
+		})
+	: null;
 
 export const auth = betterAuth({
 	database: prismaAdapter(new PrismaClient(), {
@@ -83,11 +93,57 @@ export const auth = betterAuth({
 				});
 			},
 		}),
+		...(stripeInstance && process.env.STRIPE_WEBHOOK_SECRET
+			? [
+					stripe({
+						stripeClient: stripeInstance,
+						stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+						createCustomerOnSignUp: true,
+						subscription: {
+							enabled: true,
+							plans: [
+								{
+									name: 'basic',
+									priceId: process.env.STRIPE_PRODUCT_PRICE_ID_BASIC || '',
+									limits: {
+										projects: 3,
+										storage: 5,
+									},
+									freeTrial: {
+										days: 7,
+									},
+								},
+								{
+									name: 'premium',
+									priceId: process.env.STRIPE_PRODUCT_PRICE_ID_PREMIUM || '',
+									limits: {
+										projects: 20,
+										storage: 50,
+									},
+									freeTrial: {
+										days: 14,
+									},
+								},
+							],
+						},
+					}),
+				]
+			: []),
 		apiKey(),
 	],
 });
 
 export const authClient = createAuthClient({
 	baseURL: process.env.BETTER_AUTH_URL,
-	plugins: [organizationClient(), apiKeyClient()],
+	plugins: [
+		organizationClient(),
+		apiKeyClient(),
+		...(stripeInstance && process.env.STRIPE_WEBHOOK_SECRET
+			? [
+					stripeClient({
+						subscription: true,
+					}),
+				]
+			: []),
+	],
 });
