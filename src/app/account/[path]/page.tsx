@@ -8,6 +8,7 @@ export default async function AccountPage({ params }: IWithParams) {
 
 	return (
 		<AdminTemplate
+			checkOrganization={false}
 			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Accounts' }]}
 		>
 			<main className="container p-4 md:p-6">

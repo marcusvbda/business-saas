@@ -7,7 +7,10 @@ export default async function SubscriptionPage() {
 	const subscription = await getSubscriptionStatus();
 
 	return (
-		<AdminTemplate breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Subscription' }]}>
+		<AdminTemplate
+			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Subscription' }]}
+			checkOrganization={false}
+		>
 			<main className="container p-4 md:p-6">
 				<OnlyClient>
 					<SubscriptionManagement initialSubscription={subscription} />
@@ -16,4 +19,3 @@ export default async function SubscriptionPage() {
 		</AdminTemplate>
 	);
 }
-

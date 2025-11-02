@@ -21,12 +21,18 @@ import { useGlobalStore } from '@/stores/global';
 import Loading from './fallback';
 import ProtectedPage from './protected-page';
 import RealTimeNotification from './real-time-notification';
+import SelectOrganization from './select-organization';
 
 interface IProps extends IWithChild {
 	breadcrumb?: IBreadcrumbItem[];
+	checkOrganization?: boolean;
 }
 
-export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
+export default function AdminTemplate({
+	children,
+	breadcrumb = [],
+	checkOrganization = true,
+}: IProps) {
 	const { globalLoading } = useGlobalStore();
 
 	return (
@@ -71,7 +77,17 @@ export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
 						</div>
 					</header>
 					<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-						{globalLoading ? <Loading /> : children}
+						{globalLoading ? (
+							<Loading />
+						) : (
+							<>
+								{checkOrganization ? (
+									<SelectOrganization>{children}</SelectOrganization>
+								) : (
+									children
+								)}
+							</>
+						)}
 					</div>
 				</SidebarInset>
 			</SidebarProvider>
