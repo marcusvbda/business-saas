@@ -19,9 +19,9 @@ import { IWithChild } from '@/types/common';
 import { CreateOrganizationDialog } from '@daveyplate/better-auth-ui';
 import { Organization } from 'better-auth/plugins';
 import { BuildingIcon, PlusIcon, Users2Icon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function SelectOrganizationProvider({ children }: IWithChild) {
+export default function SelectOrganization({ children }: IWithChild) {
 	const { data: activeOrganization, isPending } =
 		authClient.useActiveOrganization();
 
@@ -33,17 +33,29 @@ export default function SelectOrganizationProvider({ children }: IWithChild) {
 
 const ListOrganizations = () => {
 	const { useListOrganizations } = useAuthUiHooks();
-	const { data: organizations, isPending } = useListOrganizations();
+	const {
+		data: organizations,
+		isPending,
+		error,
+		refetch,
+	} = useListOrganizations();
 
-	if (isPending) return <Loading />;
-	return <SelectOrganization organizations={organizations || []} />;
+	useEffect(() => {
+		if ([null, undefined].includes(organizations) && error && !isPending) {
+			refetch();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [error, isPending, organizations]);
+
+	if (isPending && !error) return <Loading />;
+	return <SelectOrganizationContent organizations={organizations || []} />;
 };
 
 interface ISelectOganization {
 	organizations: Organization[];
 }
 
-const SelectOrganization = ({ organizations }: ISelectOganization) => {
+const SelectOrganizationContent = ({ organizations }: ISelectOganization) => {
 	const [isCreateOrgDialogOpen, setIsCreateOrgDialogOpen] = useState(false);
 
 	return (

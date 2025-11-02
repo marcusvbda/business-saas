@@ -1,7 +1,7 @@
 'use client';
 import AdminTemplate from '@/components/admin-template';
 import PrivateChat from '@/components/private-chat';
-import SelectOrganizationProvider from '@/providers/select-organization-provider';
+import SelectOrganization from '@/components/select-organization';
 import { useState } from 'react';
 
 export default function TestPage() {
@@ -15,7 +15,7 @@ export default function TestPage() {
 		<AdminTemplate
 			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Test Page' }]}
 		>
-			<SelectOrganizationProvider>
+			<SelectOrganization>
 				<h1>Teste</h1>
 				<div style={{ marginTop: 12 }}>
 					<button
@@ -26,7 +26,7 @@ export default function TestPage() {
 					</button>
 				</div>
 				<PrivateChat />
-			</SelectOrganizationProvider>
+			</SelectOrganization>
 		</AdminTemplate>
 	);
 }
