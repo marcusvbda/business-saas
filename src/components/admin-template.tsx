@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useGlobalStore } from '@/stores/global';
 import Loading from './fallback';
 import ProtectedPage from './protected-page';
+import RealTimeNotification from './real-time-notification';
 
 interface IProps extends IWithChild {
 	breadcrumb?: IBreadcrumbItem[];
@@ -74,6 +75,7 @@ export default function AdminTemplate({ children, breadcrumb = [] }: IProps) {
 					</div>
 				</SidebarInset>
 			</SidebarProvider>
+			<RealTimeNotification />
 		</ProtectedPage>
 	);
 }
