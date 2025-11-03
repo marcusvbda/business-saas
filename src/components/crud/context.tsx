@@ -1,47 +1,16 @@
 'use client';
 
 import { createContext, ReactNode, useContext } from 'react';
-import Loading from '../fallback';
-import EmptyState from '../empty-state';
-import { cn } from '@/lib/utils';
-import { BoxIcon } from 'lucide-react';
-
-export interface ICrud {
-	cache: {
-		keyList: string;
-	};
-	actions: {
-		list: any;
-	};
-	components?: {
-		loadingList?: ReactNode;
-		emptyState?: ReactNode;
-	};
-	ui?: {
-		emptyState?: {
-			className?: string;
-			label?: string;
-			description?: string;
-			icon?: string;
-		};
-	};
-	definitions?: {
-		list?: {
-			perPage?: number;
-		};
-	};
-}
+import { ICrud, ICrudContextProvider } from './types';
 
 const CrudContext = createContext<ICrud>({
-	cache: {
-		keyList: '',
-	},
-	actions: {
-		list: () => {},
-	},
-	components: {
-		loadingList: <></>,
+	list: {
+		cacheKey: '',
+		fetchAction: () => {},
+		loading: <></>,
 		emptyState: <></>,
+		perPage: 20,
+		columns: [],
 	},
 });
 
@@ -55,38 +24,12 @@ export const useCrudContext = (): ICrud => {
 
 export const CrudContextProvider = ({
 	children,
-	actions,
-	cache,
-	components,
-	ui,
-	definitions,
-}: any): ReactNode => {
-	const { keyList } = cache;
-	const { loadingList, emptyState } = components || {};
-	const { emptyState: emptyStateUI } = ui || {};
-	const { list: listDefinition } = definitions || {};
-
+	list,
+}: ICrudContextProvider): ReactNode => {
 	return (
 		<CrudContext.Provider
 			value={{
-				actions,
-				cache: { keyList },
-				components: {
-					loadingList: loadingList || <Loading />,
-					emptyState: emptyState || (
-						<EmptyState
-							className={cn('justify-start', emptyStateUI?.className)}
-							label={emptyStateUI?.label || 'No Registers'}
-							description={emptyStateUI?.description || 'No registers found'}
-							icon={emptyStateUI?.icon || <BoxIcon className="size-24" />}
-						/>
-					),
-				},
-				definitions: {
-					list: {
-						perPage: listDefinition?.perPage || 20,
-					},
-				},
+				list,
 			}}
 		>
 			{children}

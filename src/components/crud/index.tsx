@@ -3,22 +3,13 @@
 import { ReactNode } from 'react';
 import { CrudContextProvider } from './context';
 import { DataTable } from './data-table';
+import { ICrudContextProvider } from './types';
 
 export default function Crud({
-	actions,
-	cache,
-	components = {},
-	ui = {},
-	definitions = {},
-}: any): ReactNode {
+	list,
+}: Omit<ICrudContextProvider, 'children'>): ReactNode {
 	return (
-		<CrudContextProvider
-			actions={actions}
-			cache={cache}
-			components={components}
-			ui={ui}
-			definitions={definitions}
-		>
+		<CrudContextProvider list={list}>
 			<Content />
 		</CrudContextProvider>
 	);

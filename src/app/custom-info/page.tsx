@@ -10,25 +10,34 @@ export default function CustomInfo(): ReactNode {
 			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Custom info' }]}
 		>
 			<Crud
-				cache={{
-					keyList: 'custom-info-fetch',
+				list={{
+					cacheKey: 'custom-info-fetch',
+					fetchAction: async (opts: any) =>
+						await paginatedFetch('customInfo', opts),
+					columns: [
+						{
+							header: {
+								render: () => '#',
+								className: 'w-[100px]',
+							},
+							body: {
+								render: ({ id }) => id,
+							},
+						},
+						{
+							header: {
+								render: () => 'Name',
+							},
+							body: {
+								render: ({ name }) => name,
+								className: 'font-bold',
+							},
+						},
+					],
+					// loading: <>Loading</>,
+					// emptyState: <>Empty</>,
+					// perPage: 20,
 				}}
-				actions={{
-					list: async (opts: any) => await paginatedFetch('customInfo', opts),
-				}}
-				// components={{
-				// 	loadingList: <>Loading</>,
-				// }}
-				// ui={{
-				// 	emptyState: {
-				// 		label: 'teste',
-				// 	},
-				// }}
-				// definitions={{
-				// 	list: {
-				// 		perPage: 20,
-				// 	},
-				// }}
 			/>
 		</AdminTemplate>
 	);
