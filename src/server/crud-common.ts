@@ -1,5 +1,54 @@
 'use server';
 
+import { prisma } from 'prisma/prisma.service';
+
+interface IPaginatedFetchSettings {
+	page?: number;
+	perPage?: number;
+	orderBy?: any;
+}
+
+interface IPaginatedFetchResponse {
+	items: any[];
+	meta: {
+		total: number;
+		page: number;
+		perPage: number;
+		totalPages: number;
+	};
+}
+
+export const paginatedFetch = async (
+	modelName: string,
+	settings: IPaginatedFetchSettings,
+): Promise<IPaginatedFetchResponse> => {
+	const model = (prisma as any)?.[modelName];
+	if (!model) {
+		throw new Error(`Model not found ${modelName}`);
+	}
+
+	const { page = 1, perPage = 20, orderBy = { id: 'desc' } } = settings;
+	const skip = (page - 1) * perPage;
+	const [data, total] = await Promise.all([
+		model.findMany({
+			skip,
+			take: perPage,
+			orderBy: orderBy,
+		}),
+		model.count(),
+	]);
+
+	return {
+		items: data,
+		meta: {
+			total,
+			page,
+			perPage,
+			totalPages: Math.ceil(total / perPage),
+		},
+	};
+};
+
 // export const createOrganization = async (
 // 	initialState: any,
 // 	formData: FormData,
