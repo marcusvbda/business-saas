@@ -1,13 +1,11 @@
 import { ReactNode } from 'react';
 
-interface IListRow {
-	className?: string;
-	render: any;
-}
-
-export interface IListColumn {
-	header: IListRow;
-	body: IListRow;
+export interface IListRow {
+	key: string;
+	header?: any;
+	cell?: any;
+	sort?: any;
+	filter?: any;
 }
 
 export interface ICrud {
@@ -17,7 +15,8 @@ export interface ICrud {
 		loading?: ReactNode;
 		emptyState?: ReactNode;
 		perPage?: number;
-		columns: IListColumn[];
+		columns: IListRow[];
+		orderBy?: { [key: string]: 'desc' | 'asc' };
 	};
 }
 

@@ -16,27 +16,17 @@ export default function CustomInfo(): ReactNode {
 						await paginatedFetch('customInfo', opts),
 					columns: [
 						{
-							header: {
-								render: () => '#',
-								className: 'w-[100px]',
-							},
-							body: {
-								render: ({ id }) => id,
-							},
+							key: 'id',
+							sort: true,
 						},
 						{
-							header: {
-								render: () => 'Name',
-							},
-							body: {
-								render: ({ name }) => name,
-								className: 'font-bold',
-							},
+							key: 'name',
+							sort: true,
 						},
 					],
 					// loading: <>Loading</>,
 					// emptyState: <>Empty</>,
-					perPage: 10,
+					perPage: 5,
 				}}
 			/>
 		</AdminTemplate>

@@ -1,6 +1,19 @@
 'use client';
 
 import {
+	ColumnFiltersState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	SortingState,
+	useReactTable,
+	VisibilityState,
+} from '@tanstack/react-table';
+
+import { Button } from '@/components/ui/button';
+import {
 	Table,
 	TableBody,
 	TableCell,
@@ -12,187 +25,220 @@ import { useCrudContext } from './context';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../fallback';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty';
-import { IListColumn } from './types';
-import {
-	Pagination,
-	PaginationContent,
-	PaginationEllipsis,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from '../ui/pagination';
-import { ReactNode, useState } from 'react';
+import { useState, useMemo } from 'react';
+import { SortAsc, SortDesc } from 'lucide-react';
 
 export function DataTable() {
-	const [page, setPage] = useState(1);
-
 	const {
-		list: { cacheKey, fetchAction, loading, perPage, emptyState, columns },
+		list: {
+			fetchAction,
+			perPage,
+			cacheKey,
+			columns,
+			loading,
+			emptyState,
+			orderBy,
+		},
 	} = useCrudContext();
 
-	const fetchParams = {
-		page,
-		perPage: perPage || 20,
-		orderBy: { id: 'desc' },
-	};
-
-	const { data, isPending } = useQuery({
-		queryFn: async () => fetchAction(fetchParams),
-		queryKey: [cacheKey, JSON.stringify(fetchParams)],
+	const [pagination, setPagination] = useState({
+		pageIndex: 0,
+		pageSize: perPage || 20,
 	});
 
-	const showEmptyState = (data?.meta?.total || 0) === 0;
-	const dataItems = data?.items || [];
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+	const [rowSelection, setRowSelection] = useState({});
 
-	if (isPending) {
-		return loading || <Loading />;
+	const orderByFromSorting = (sortingState: SortingState) => {
+		const order: Record<string, 'asc' | 'desc'> = {};
+		for (const s of sortingState) {
+			if (!s.id) continue;
+			order[s.id] = s.desc ? 'desc' : 'asc';
+		}
+		return order;
+	};
+
+	const fetchParams = {
+		page: pagination.pageIndex + 1,
+		perPage: pagination.pageSize,
+		orderBy: orderByFromSorting(sorting) || orderBy || { id: 'desc' },
+	};
+
+	const { data: queryResult, isPending } = useQuery({
+		queryFn: async () => fetchAction(fetchParams),
+		queryKey: [cacheKey, fetchParams],
+	});
+
+	const total = queryResult?.meta?.total ?? 0;
+	const totalPages =
+		queryResult?.meta?.pageCount ??
+		(Math.ceil(total / pagination.pageSize) || 1);
+
+	const cols = useMemo(() => {
+		let items = [];
+		items = [
+			...items,
+			...columns.map((col: any) => ({
+				accessorKey: col.key,
+				header: col?.header ?? col.key,
+				cell: col?.cell ?? ((row) => row.getValue(col.key)),
+				enableSorting: Boolean(col?.sort),
+				enableFiltering: Boolean(col?.filter),
+			})),
+		];
+		return items;
+	}, [columns]);
+
+	const table = useReactTable({
+		data: queryResult?.items || [],
+		columns: cols as any,
+		manualPagination: true,
+		pageCount: totalPages,
+		state: {
+			sorting,
+			columnFilters,
+			columnVisibility,
+			rowSelection,
+			pagination,
+		},
+		onPaginationChange: setPagination,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+	});
+
+	const canPreviousPage = pagination.pageIndex > 0;
+	const canNextPage = pagination.pageIndex + 1 < totalPages;
+
+	const showEmptyState = (queryResult?.meta?.total || 0) === 0;
+
+	if (isPending) return loading || <Loading />;
+
+	if (showEmptyState) {
+		return (
+			<Empty className="justify-start">
+				{emptyState || (
+					<EmptyHeader>
+						<EmptyTitle>No Registers</EmptyTitle>
+						<EmptyDescription>No registers found</EmptyDescription>
+					</EmptyHeader>
+				)}
+			</Empty>
+		);
 	}
 
 	return (
-		<div className="overflow-hidden rounded-lg border pb-4">
-			<Table>
-				<TableHeader className="bg-muted sticky top-0 z-10">
-					<TableRow>
-						{columns.map((col: IListColumn, key: number) => (
-							<TableHead key={key} className={col.header.className || ''}>
-								{col.header.render()}
-							</TableHead>
-						))}
-					</TableRow>
-				</TableHeader>
-				<TableBody className="**:data-[slot=table-cell]:first:w-8">
-					{showEmptyState ? (
-						<TableRow>
-							<TableCell colSpan={2} className="h-24 text-center">
-								<Empty className="justify-start">
-									{emptyState || (
-										<EmptyHeader>
-											<EmptyTitle>No Registers</EmptyTitle>
-											<EmptyDescription>No registers found</EmptyDescription>
-										</EmptyHeader>
-									)}
-								</Empty>
-							</TableCell>
-						</TableRow>
-					) : (
-						dataItems.map((x: any, key: string) => (
-							<TableRow key={key}>
-								{columns.map((col: IListColumn, keyCol: number) => (
-									<TableCell
-										key={`${key}_${keyCol}`}
-										className={col.body.className || ''}
-									>
-										{col.body.render(x)}
-									</TableCell>
-								))}
+		<div className="w-full">
+			<div className="overflow-hidden rounded-md border">
+				<Table>
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									const canSort = header.column.getCanSort();
+									const sortDirection = header.column.getIsSorted();
+
+									return (
+										<TableHead
+											key={header.id}
+											onClick={
+												canSort
+													? header.column.getToggleSortingHandler()
+													: undefined
+											}
+											className={canSort ? 'cursor-pointer select-none' : ''}
+										>
+											{header.isPlaceholder ? null : (
+												<div className="flex items-center gap-1">
+													{flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+													{sortDirection === 'asc' && (
+														<SortAsc className="size-3" />
+													)}
+													{sortDirection === 'desc' && (
+														<SortDesc className="size-3" />
+													)}
+												</div>
+											)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						))
-					)}
-				</TableBody>
-			</Table>
-			{data?.meta?.totalPages > 1 && (
-				<PaginationComp
-					page={page}
-					setPage={setPage}
-					totalPages={data.meta.totalPages}
-				/>
-			)}
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows?.length ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && 'selected'}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									No results.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+
+			<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="text-muted-foreground flex-1 text-sm">
+					Page {pagination.pageIndex + 1} of {totalPages}
+				</div>
+				<div className="space-x-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() =>
+							setPagination((old) => ({
+								...old,
+								pageIndex: Math.max(old.pageIndex - 1, 0),
+							}))
+						}
+						disabled={!canPreviousPage}
+					>
+						Previous
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() =>
+							setPagination((old) => ({
+								...old,
+								pageIndex: Math.min(old.pageIndex + 1, totalPages - 1),
+							}))
+						}
+						disabled={!canNextPage}
+					>
+						Next
+					</Button>
+				</div>
+			</div>
 		</div>
 	);
 }
-
-interface IPaginationMeta {
-	setPage: any;
-	page: number;
-	totalPages: number;
-}
-
-const PaginationComp = ({ page, setPage, totalPages }: IPaginationMeta) => {
-	const clickPage = (e: any, newPage: number) => {
-		e.preventDefault();
-		if (newPage >= 1 && newPage <= totalPages) {
-			setPage(newPage);
-		}
-	};
-
-	const renderPages = (): ReactNode => {
-		const showItems = 4;
-		const items = [];
-
-		let startPage = Math.max(1, page - Math.floor(showItems / 2));
-		let endPage = startPage + showItems - 1;
-
-		if (endPage > totalPages) {
-			endPage = totalPages;
-			startPage = Math.max(1, endPage - showItems + 1);
-		}
-
-		if (startPage > 1) {
-			items.push(
-				<PaginationItem key="start-ellipsis">
-					<PaginationEllipsis
-						className="cursor-pointer"
-						onClick={(e: any) => clickPage(e, startPage - 1)}
-					/>
-				</PaginationItem>,
-			);
-		}
-
-		for (let i = startPage; i <= endPage; i++) {
-			items.push(
-				<PaginationItem key={i}>
-					<PaginationLink
-						size="sm"
-						href="#"
-						isActive={page === i}
-						onClick={(e: any) => clickPage(e, i)}
-					>
-						{i}
-					</PaginationLink>
-				</PaginationItem>,
-			);
-		}
-
-		if (endPage < totalPages) {
-			items.push(
-				<PaginationItem key="end-ellipsis">
-					<PaginationEllipsis
-						className="cursor-pointer"
-						onClick={(e: any) => clickPage(e, endPage + 1)}
-					/>
-				</PaginationItem>,
-			);
-		}
-
-		return items;
-	};
-
-	return (
-		<Pagination>
-			<PaginationContent>
-				{page > 1 && (
-					<PaginationItem>
-						<PaginationPrevious
-							size="sm"
-							href="#"
-							onClick={(e: any) => clickPage(e, page - 1)}
-						/>
-					</PaginationItem>
-				)}
-
-				{renderPages()}
-
-				{page < totalPages && (
-					<PaginationItem>
-						<PaginationNext
-							size="sm"
-							href="#"
-							onClick={(e: any) => clickPage(e, page + 1)}
-						/>
-					</PaginationItem>
-				)}
-			</PaginationContent>
-		</Pagination>
-	);
-};
