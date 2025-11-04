@@ -39,6 +39,8 @@ export function DataTable() {
 			emptyState,
 			noResults,
 			orderBy,
+			render,
+			filterPlaceholder,
 		},
 	} = useCrudContext();
 
@@ -139,7 +141,7 @@ export function DataTable() {
 		<div className="w-full space-y-3">
 			<div className="flex justify-between items-center">
 				<Input
-					placeholder="Search..."
+					placeholder={filterPlaceholder || 'Search ...'}
 					className="max-w-xs ml-auto"
 					value={globalTempFilter}
 					onChange={(e: any) => setGlobalTempFilter(e.target.value)}
@@ -158,77 +160,81 @@ export function DataTable() {
 				</Empty>
 			) : (
 				<>
-					<div className="overflow-hidden rounded-md border">
-						<Table>
-							<TableHeader>
-								{table.getHeaderGroups().map((headerGroup) => (
-									<TableRow key={headerGroup.id}>
-										{headerGroup.headers.map((header) => {
-											const canSort = header.column.getCanSort();
-											const sortDirection = header.column.getIsSorted();
+					{render ? (
+						render(table)
+					) : (
+						<div className="overflow-hidden rounded-md border">
+							<Table>
+								<TableHeader>
+									{table.getHeaderGroups().map((headerGroup) => (
+										<TableRow key={headerGroup.id}>
+											{headerGroup.headers.map((header) => {
+												const canSort = header.column.getCanSort();
+												const sortDirection = header.column.getIsSorted();
 
-											return (
-												<TableHead
-													key={header.id}
-													onClick={
-														canSort
-															? header.column.getToggleSortingHandler()
-															: undefined
-													}
-													className={
-														canSort ? 'cursor-pointer select-none' : ''
-													}
-												>
-													{header.isPlaceholder ? null : (
-														<div className="flex items-center gap-1">
-															{flexRender(
-																header.column.columnDef.header,
-																header.getContext(),
-															)}
-															{sortDirection === 'asc' && (
-																<ArrowDown className="size-3" />
-															)}
-															{sortDirection === 'desc' && (
-																<ArrowUp className="size-3" />
-															)}
-														</div>
-													)}
-												</TableHead>
-											);
-										})}
-									</TableRow>
-								))}
-							</TableHeader>
-							<TableBody>
-								{table.getRowModel().rows?.length ? (
-									table.getRowModel().rows.map((row) => (
-										<TableRow
-											key={row.id}
-											data-state={row.getIsSelected() && 'selected'}
-										>
-											{row.getVisibleCells().map((cell) => (
-												<TableCell key={cell.id}>
-													{flexRender(
-														cell.column.columnDef.cell,
-														cell.getContext(),
-													)}
-												</TableCell>
-											))}
+												return (
+													<TableHead
+														key={header.id}
+														onClick={
+															canSort
+																? header.column.getToggleSortingHandler()
+																: undefined
+														}
+														className={
+															canSort ? 'cursor-pointer select-none' : ''
+														}
+													>
+														{header.isPlaceholder ? null : (
+															<div className="flex items-center gap-1">
+																{flexRender(
+																	header.column.columnDef.header,
+																	header.getContext(),
+																)}
+																{sortDirection === 'asc' && (
+																	<ArrowDown className="size-3" />
+																)}
+																{sortDirection === 'desc' && (
+																	<ArrowUp className="size-3" />
+																)}
+															</div>
+														)}
+													</TableHead>
+												);
+											})}
 										</TableRow>
-									))
-								) : (
-									<TableRow>
-										<TableCell
-											colSpan={columns.length}
-											className="h-24 text-center"
-										>
-											{noResults ? noResults : <>No results.</>}
-										</TableCell>
-									</TableRow>
-								)}
-							</TableBody>
-						</Table>
-					</div>
+									))}
+								</TableHeader>
+								<TableBody>
+									{table.getRowModel().rows?.length ? (
+										table.getRowModel().rows.map((row) => (
+											<TableRow
+												key={row.id}
+												data-state={row.getIsSelected() && 'selected'}
+											>
+												{row.getVisibleCells().map((cell) => (
+													<TableCell key={cell.id}>
+														{flexRender(
+															cell.column.columnDef.cell,
+															cell.getContext(),
+														)}
+													</TableCell>
+												))}
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell
+												colSpan={columns.length}
+												className="h-24 text-center"
+											>
+												{noResults ? noResults : <>No results.</>}
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</div>
+					)}
 
 					<div className="flex items-center justify-end space-x-2 py-4">
 						<div className="text-muted-foreground flex-1 text-sm">

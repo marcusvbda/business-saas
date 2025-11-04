@@ -6,13 +6,16 @@ export interface IListRow {
 	cell?: any;
 	sort?: any;
 	filter?: any;
+	render?: any;
 }
 
 export interface ICrud {
 	list: {
+		filterPlaceholder?: string;
 		cacheKey: string;
 		fetchAction: any;
 		getFetchParams?: any;
+		render?: any;
 		loading?: ReactNode;
 		emptyState?: ReactNode;
 		noResults?: ReactNode;

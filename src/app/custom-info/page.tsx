@@ -16,14 +16,17 @@ export default function CustomInfo(): ReactNode {
 					fetchAction: async (params: IFetchParams) => {
 						return await paginatedFetch('customInfo', params);
 					},
+					filterPlaceholder: 'Search ...',
 					columns: [
 						{
 							key: 'id',
+							header: '#',
 							sort: true,
 							filter: true,
 						},
 						{
 							key: 'name',
+							header: 'Name',
 							sort: true,
 							filter: true,
 						},
@@ -31,6 +34,15 @@ export default function CustomInfo(): ReactNode {
 					// loading: <>Loading</>,
 					// emptyState: <>Empty</>,
 					perPage: 10,
+					// render: (table: any) => {
+					// 	return (
+					// 		<div className="w-full flex gap-2">
+					// 			{(table.getRowModel()?.rows || []).map((row, key) => (
+					// 				<div key={key}>Aoba</div>
+					// 			))}
+					// 		</div>
+					// 	);
+					// },
 				}}
 			/>
 		</AdminTemplate>
