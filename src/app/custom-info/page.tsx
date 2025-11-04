@@ -36,7 +36,7 @@ export default function CustomInfo(): ReactNode {
 					],
 					// loading: <>Loading</>,
 					// emptyState: <>Empty</>,
-					// perPage: 20,
+					perPage: 10,
 				}}
 			/>
 		</AdminTemplate>

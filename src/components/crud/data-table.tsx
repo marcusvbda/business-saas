@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import {
 	Table,
 	TableBody,
@@ -24,14 +22,17 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from '../ui/pagination';
+import { ReactNode, useState } from 'react';
 
 export function DataTable() {
+	const [page, setPage] = useState(1);
+
 	const {
 		list: { cacheKey, fetchAction, loading, perPage, emptyState, columns },
 	} = useCrudContext();
 
 	const fetchParams = {
-		page: 1,
+		page,
 		perPage: perPage || 20,
 		orderBy: { id: 'desc' },
 	};
@@ -49,7 +50,7 @@ export function DataTable() {
 	}
 
 	return (
-		<div className="overflow-hidden rounded-lg border">
+		<div className="overflow-hidden rounded-lg border pb-4">
 			<Table>
 				<TableHeader className="bg-muted sticky top-0 z-10">
 					<TableRow>
@@ -90,34 +91,108 @@ export function DataTable() {
 					)}
 				</TableBody>
 			</Table>
-			<Pagination>
-				<PaginationContent>
-					<PaginationItem>
-						<PaginationPrevious size="sm" href="#" />
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationLink size="sm" href="#" isActive>
-							1
-						</PaginationLink>
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationLink size="sm" href="#">
-							2
-						</PaginationLink>
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationLink size="sm" href="#">
-							3
-						</PaginationLink>
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationEllipsis />
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationNext size="sm" href="#" />
-					</PaginationItem>
-				</PaginationContent>
-			</Pagination>
+			{data?.meta?.totalPages > 1 && (
+				<PaginationComp
+					page={page}
+					setPage={setPage}
+					totalPages={data.meta.totalPages}
+				/>
+			)}
 		</div>
 	);
 }
+
+interface IPaginationMeta {
+	setPage: any;
+	page: number;
+	totalPages: number;
+}
+
+const PaginationComp = ({ page, setPage, totalPages }: IPaginationMeta) => {
+	const clickPage = (e: any, newPage: number) => {
+		e.preventDefault();
+		if (newPage >= 1 && newPage <= totalPages) {
+			setPage(newPage);
+		}
+	};
+
+	const renderPages = (): ReactNode => {
+		const showItems = 4;
+		const items = [];
+
+		let startPage = Math.max(1, page - Math.floor(showItems / 2));
+		let endPage = startPage + showItems - 1;
+
+		if (endPage > totalPages) {
+			endPage = totalPages;
+			startPage = Math.max(1, endPage - showItems + 1);
+		}
+
+		if (startPage > 1) {
+			items.push(
+				<PaginationItem key="start-ellipsis">
+					<PaginationEllipsis
+						className="cursor-pointer"
+						onClick={(e: any) => clickPage(e, startPage - 1)}
+					/>
+				</PaginationItem>,
+			);
+		}
+
+		for (let i = startPage; i <= endPage; i++) {
+			items.push(
+				<PaginationItem key={i}>
+					<PaginationLink
+						size="sm"
+						href="#"
+						isActive={page === i}
+						onClick={(e: any) => clickPage(e, i)}
+					>
+						{i}
+					</PaginationLink>
+				</PaginationItem>,
+			);
+		}
+
+		if (endPage < totalPages) {
+			items.push(
+				<PaginationItem key="end-ellipsis">
+					<PaginationEllipsis
+						className="cursor-pointer"
+						onClick={(e: any) => clickPage(e, endPage + 1)}
+					/>
+				</PaginationItem>,
+			);
+		}
+
+		return items;
+	};
+
+	return (
+		<Pagination>
+			<PaginationContent>
+				{page > 1 && (
+					<PaginationItem>
+						<PaginationPrevious
+							size="sm"
+							href="#"
+							onClick={(e: any) => clickPage(e, page - 1)}
+						/>
+					</PaginationItem>
+				)}
+
+				{renderPages()}
+
+				{page < totalPages && (
+					<PaginationItem>
+						<PaginationNext
+							size="sm"
+							href="#"
+							onClick={(e: any) => clickPage(e, page + 1)}
+						/>
+					</PaginationItem>
+				)}
+			</PaginationContent>
+		</Pagination>
+	);
+};
