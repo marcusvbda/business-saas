@@ -9,9 +9,7 @@ import {
 	useReactTable,
 	VisibilityState,
 } from '@tanstack/react-table';
-
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // 🔹 Import do input
 import {
 	Table,
 	TableBody,
@@ -24,24 +22,25 @@ import { useCrudContext } from './context';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../fallback';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { IFetchParams } from './types';
+import useDebounceState from './hooks/use-debouce-state';
 
 export function DataTable() {
 	const {
+		id,
 		list: {
 			fetchAction,
 			perPage,
-			cacheKey,
 			columns,
 			loading,
 			emptyState,
 			noResults,
 			orderBy,
 			render,
-			filterPlaceholder,
 		},
+		slots: { beforeTable },
 	} = useCrudContext();
 
 	const [pagination, setPagination] = useState({
@@ -52,20 +51,8 @@ export function DataTable() {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});
-	const [globalTempFilter, setGlobalTempFilter] = useState('');
-	const [globalFilter, setGlobalFilter] = useState('');
-	const filterRef = useRef(null);
-
-	useEffect(() => {
-		clearTimeout(filterRef.current);
-		filterRef.current = setTimeout(() => {
-			setGlobalFilter(globalTempFilter);
-		}, 800);
-
-		return () => {
-			clearTimeout(filterRef.current);
-		};
-	}, [globalTempFilter]);
+	const [globalTempFilter, setGlobalTempFilter, globalFilter] =
+		useDebounceState('');
 
 	useEffect(() => {
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -80,16 +67,6 @@ export function DataTable() {
 		return order;
 	};
 
-	const filterObject = useMemo(() => {
-		if (!globalFilter) return {};
-		const filterableColumns = columns.filter((c: any) => c.filter);
-		const filters: Record<string, string> = {};
-		for (const col of filterableColumns) {
-			filters[col.key] = globalFilter;
-		}
-		return filters;
-	}, [columns, globalFilter]);
-
 	const fetchParams: IFetchParams = {
 		page: pagination.pageIndex + 1,
 		perPage: pagination.pageSize,
@@ -97,8 +74,8 @@ export function DataTable() {
 	};
 
 	const { data: queryResult, isPending } = useQuery({
-		queryFn: async () => fetchAction({ ...fetchParams, filter: filterObject }),
-		queryKey: [cacheKey, fetchParams, filterObject],
+		queryFn: async () => fetchAction(fetchParams, { globalFilter }),
+		queryKey: [`${id}-fetch-list`, fetchParams, globalFilter],
 	});
 
 	const totalPages = queryResult?.meta?.totalPages;
@@ -139,14 +116,10 @@ export function DataTable() {
 
 	return (
 		<div className="w-full space-y-3">
-			<div className="flex justify-between items-center">
-				<Input
-					placeholder={filterPlaceholder || 'Search ...'}
-					className="max-w-xs ml-auto"
-					value={globalTempFilter}
-					onChange={(e: any) => setGlobalTempFilter(e.target.value)}
-				/>
-			</div>
+			{beforeTable &&
+				beforeTable({
+					filterStates: [globalTempFilter, setGlobalTempFilter, globalFilter],
+				})}
 			{isPending ? (
 				loading || <Loading />
 			) : showEmptyState ? (

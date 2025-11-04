@@ -5,14 +5,12 @@ export interface IListRow {
 	header?: any;
 	cell?: any;
 	sort?: any;
-	filter?: any;
 	render?: any;
 }
 
 export interface ICrud {
+	id: string;
 	list: {
-		filterPlaceholder?: string;
-		cacheKey: string;
 		fetchAction: any;
 		getFetchParams?: any;
 		render?: any;
@@ -22,6 +20,9 @@ export interface ICrud {
 		perPage?: number;
 		columns: IListRow[];
 		orderBy?: { [key: string]: 'desc' | 'asc' };
+	};
+	slots: {
+		beforeTable?: any;
 	};
 }
 

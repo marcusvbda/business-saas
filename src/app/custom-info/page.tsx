@@ -1,48 +1,66 @@
 'use client';
 import AdminTemplate from '@/components/admin-template';
 import Crud from '@/components/crud';
+import { paginatedFetch } from '@/components/crud/server/actions';
 import { IFetchParams } from '@/components/crud/types';
-import { paginatedFetch } from '@/server/crud-common';
+import { Input } from '@/components/ui/input';
 import { ReactNode } from 'react';
 
 export default function CustomInfo(): ReactNode {
+	const beforeTableSlot = (cx: any) => {
+		const { filterStates } = cx;
+		const [filterState, setFilterState] = filterStates;
+		return (
+			<div className="flex justify-between items-center">
+				<Input
+					placeholder={'Search ...'}
+					className="max-w-xs ml-auto"
+					value={filterState}
+					onChange={(e: any) => setFilterState(e.target.value)}
+				/>
+			</div>
+		);
+	};
+
+	const fetchListAction = async (params: IFetchParams, cx: any) => {
+		const { globalFilter } = cx;
+		return await paginatedFetch('customInfo', {
+			...params,
+			...{
+				filter: {
+					name: globalFilter,
+					id: globalFilter,
+				},
+			},
+		});
+	};
+
+	const columnsList = [
+		{
+			key: 'id',
+			header: '#',
+			sort: true,
+		},
+		{
+			key: 'name',
+			header: 'Name',
+			sort: true,
+		},
+	];
+
 	return (
 		<AdminTemplate
 			breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Custom info' }]}
 		>
 			<Crud
+				id="custom-info"
+				slots={{
+					beforeTable: beforeTableSlot,
+				}}
 				list={{
-					cacheKey: 'custom-info-fetch',
-					fetchAction: async (params: IFetchParams) => {
-						return await paginatedFetch('customInfo', params);
-					},
-					filterPlaceholder: 'Search ...',
-					columns: [
-						{
-							key: 'id',
-							header: '#',
-							sort: true,
-							filter: true,
-						},
-						{
-							key: 'name',
-							header: 'Name',
-							sort: true,
-							filter: true,
-						},
-					],
-					// loading: <>Loading</>,
-					// emptyState: <>Empty</>,
+					fetchAction: fetchListAction,
+					columns: columnsList,
 					perPage: 10,
-					// render: (table: any) => {
-					// 	return (
-					// 		<div className="w-full flex gap-2">
-					// 			{(table.getRowModel()?.rows || []).map((row, key) => (
-					// 				<div key={key}>Aoba</div>
-					// 			))}
-					// 		</div>
-					// 	);
-					// },
 				}}
 			/>
 		</AdminTemplate>
