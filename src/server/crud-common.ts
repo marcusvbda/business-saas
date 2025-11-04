@@ -1,12 +1,7 @@
 'use server';
 
+import { IFetchParams } from '@/components/crud/types';
 import { prisma } from 'prisma/prisma.service';
-
-interface IPaginatedFetchSettings {
-	page?: number;
-	perPage?: number;
-	orderBy?: any;
-}
 
 interface IPaginatedFetchResponse {
 	items: any[];
@@ -18,24 +13,47 @@ interface IPaginatedFetchResponse {
 	};
 }
 
+interface IParams extends IFetchParams {
+	filter?: {
+		[key: string]: string;
+	};
+}
+
 export const paginatedFetch = async (
 	modelName: string,
-	settings: IPaginatedFetchSettings,
+	{ page, perPage, orderBy, filter }: IParams,
 ): Promise<IPaginatedFetchResponse> => {
 	const model = (prisma as any)?.[modelName];
 	if (!model) {
 		throw new Error(`Model not found ${modelName}`);
 	}
-
-	const { page = 1, perPage = 20, orderBy = { id: 'desc' } } = settings;
 	const skip = (page - 1) * perPage;
-	const [data, total] = await Promise.all([
+
+	let where: any = {};
+	if (filter && Object.keys(filter).length > 0) {
+		const orConditions = Object.entries(filter).map(([key, value]) => {
+			if (typeof value === 'object' && value !== null) {
+				return { [key]: value };
+			}
+			return {
+				[key]: {
+					contains: String(value),
+				},
+			};
+		});
+
+		where = { OR: orConditions };
+	}
+
+	const [data, total, totalResult] = await Promise.all([
 		model.findMany({
 			skip,
 			take: perPage,
 			orderBy: orderBy,
+			where,
 		}),
 		model.count(),
+		model.count({ where }),
 	]);
 
 	return {
@@ -44,7 +62,7 @@ export const paginatedFetch = async (
 			total,
 			page,
 			perPage,
-			totalPages: Math.ceil(total / perPage),
+			totalPages: Math.ceil(totalResult / perPage),
 		},
 	};
 };
