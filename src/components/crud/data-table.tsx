@@ -24,12 +24,14 @@ import Loading from '../fallback';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '../ui/empty';
 import { useState, useMemo, useEffect } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { IFetchParams } from './types';
+import { IFetchParams, IListRow } from './types';
 import useDebounceState from './hooks/use-debouce-state';
+import { paginatedFetch } from './server/actions';
+import { Input } from '../ui/input';
 
 export function DataTable() {
 	const {
-		id,
+		entityId,
 		list: {
 			fetchAction,
 			perPage,
@@ -40,7 +42,6 @@ export function DataTable() {
 			orderBy,
 			render,
 		},
-		slots: { beforeTable },
 	} = useCrudContext();
 
 	const [pagination, setPagination] = useState({
@@ -73,9 +74,26 @@ export function DataTable() {
 		orderBy: orderByFromSorting(sorting) || orderBy || { id: 'desc' },
 	};
 
+	const fetchActionHandler = async () => {
+		const params = {
+			...fetchParams,
+			filter: {},
+		};
+		const filterCols = columns
+			.filter((x: IListRow) => x?.filter)
+			.map((x: IListRow) => x.key);
+
+		for (const i in filterCols) {
+			params.filter[filterCols[i]] = globalFilter;
+		}
+		return await (fetchAction
+			? fetchAction(params as any)
+			: paginatedFetch(entityId, params as any));
+	};
+
 	const { data: queryResult, isPending } = useQuery({
-		queryFn: async () => fetchAction(fetchParams, { globalFilter }),
-		queryKey: [`${id}-fetch-list`, fetchParams, globalFilter],
+		queryFn: async () => await fetchActionHandler(),
+		queryKey: [entityId, 'list', fetchActionHandler, fetchParams, globalFilter],
 	});
 
 	const totalPages = queryResult?.meta?.totalPages;
@@ -114,12 +132,20 @@ export function DataTable() {
 
 	const showEmptyState = (queryResult?.meta?.total || 0) === 0;
 
+	const hasGlobalGilter = columns.some((x: IListRow) => x?.filter);
+
 	return (
 		<div className="w-full space-y-3">
-			{beforeTable &&
-				beforeTable({
-					filterStates: [globalTempFilter, setGlobalTempFilter, globalFilter],
-				})}
+			{hasGlobalGilter && (
+				<div className="flex justify-between items-center">
+					<Input
+						placeholder={'Search ...'}
+						className="max-w-xs ml-auto"
+						value={globalTempFilter}
+						onChange={(e: any) => setGlobalTempFilter(e.target.value)}
+					/>
+				</div>
+			)}
 			{isPending ? (
 				loading || <Loading />
 			) : showEmptyState ? (

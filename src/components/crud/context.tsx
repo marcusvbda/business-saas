@@ -4,16 +4,13 @@ import { createContext, ReactNode, useContext } from 'react';
 import { ICrud, ICrudContextProvider } from './types';
 
 const CrudContext = createContext<ICrud>({
-	id: '',
+	entityId: '',
 	list: {
 		fetchAction: () => {},
 		loading: <></>,
 		emptyState: <></>,
 		perPage: 20,
 		columns: [],
-	},
-	slots: {
-		beforeTable: null,
 	},
 });
 
@@ -28,15 +25,13 @@ export const useCrudContext = (): ICrud => {
 export const CrudContextProvider = ({
 	children,
 	list,
-	slots,
-	id,
+	entityId,
 }: ICrudContextProvider): ReactNode => {
 	return (
 		<CrudContext.Provider
 			value={{
-				id,
+				entityId,
 				list,
-				slots,
 			}}
 		>
 			{children}

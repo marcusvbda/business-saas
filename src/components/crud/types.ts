@@ -4,14 +4,15 @@ export interface IListRow {
 	key: string;
 	header?: any;
 	cell?: any;
-	sort?: any;
+	sort?: boolean;
+	filter?: boolean;
 	render?: any;
 }
 
 export interface ICrud {
-	id: string;
+	entityId: string;
 	list: {
-		fetchAction: any;
+		fetchAction?: any;
 		getFetchParams?: any;
 		render?: any;
 		loading?: ReactNode;
@@ -20,9 +21,6 @@ export interface ICrud {
 		perPage?: number;
 		columns: IListRow[];
 		orderBy?: { [key: string]: 'desc' | 'asc' };
-	};
-	slots: {
-		beforeTable?: any;
 	};
 }
 

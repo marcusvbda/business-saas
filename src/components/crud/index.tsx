@@ -6,12 +6,11 @@ import { DataTable } from './data-table';
 import { ICrudContextProvider } from './types';
 
 export default function Crud({
-	id,
+	entityId,
 	list,
-	slots,
 }: Omit<ICrudContextProvider, 'children'>): ReactNode {
 	return (
-		<CrudContextProvider id={id} list={list} slots={slots}>
+		<CrudContextProvider entityId={entityId} list={list}>
 			<Content />
 		</CrudContextProvider>
 	);
